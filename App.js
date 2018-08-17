@@ -15,7 +15,10 @@ export default class App extends Component {
   renderButtons() {
     let layouts = buttons.map((buttonRows, index) => {
       let rowItem = buttonRows.map((buttonItems, buttonIndex) => {
-        return <InputNumberButton key={'btn-' + buttonIndex} />
+        return <InputNumberButton 
+        value={buttonItems}
+        handleOnPress={() => {}}
+        key={'btn-' + buttonIndex} />
       })
       return <View style={styles.inputRow} key={'row-' + index}>{rowItem}</View>
     });
