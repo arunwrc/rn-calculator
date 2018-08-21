@@ -16,6 +16,9 @@ export default class App extends Component {
     super()
     this.initialState = {
       displayValue: '0',
+      firstValue: '',
+      secondValue: '',
+      nextValue: false,
       operator: null
     }
     this.state = this.initialState;
@@ -33,7 +36,7 @@ export default class App extends Component {
    return layouts
   }
   handleInput = (input) => {
-    const { displayValue, operator } = this.state;
+    const { displayValue, operator, firstValue, secondValue, nextValue } = this.state;
     switch (input) {
       case '0':
       case '1':
@@ -48,19 +51,52 @@ export default class App extends Component {
           this.setState({ 
             displayValue: (displayValue === '0') ? input : displayValue + input
           })
+
+          if (!nextValue){
+            this.setState({
+              firstValue: firstValue + input
+            })
+          }else{
+            this.setState({
+              secondValue: secondValue + input
+            })
+          }
           break;
       case '+':
       case '-':
       case 'x':
       case '/':
           this.setState({
+            nextValue: true,
             operator: input,
             displayValue: (operator !== null ? displayValue.substr(0, displayValue.length-1) : displayValue) + input
           })
       case '.':
-          let dot = displayValue.slice(-1)
+          let dot = displayValue.toString().slice(-1)
           this.setState({
             displayValue: dot !== '.' ? displayValue + input : displayValue
+          })
+          if (!nextValue){
+            this.setState({
+              firstValue: firstValue + input
+            })
+          }else{
+            this.setState({
+              secondValue: secondValue + input
+            })
+          }
+          break;
+      case '=':
+          //alert(firstValue);
+          var first = firstValue.substr(0, firstValue.length-1)
+          let formatOperator = (operator == 'x') ? '*' : (operator == '/') ? '/' : operator
+          let result = eval(first+formatOperator+secondValue)
+          this.setState({
+            displayValue: result % 1 === 0 ? result : result.toFixed(2),
+            firstValue: result % 1 === 0 ? result : result.toFixed(2),
+            secondValue: '',
+            operator: null,
+            nextValue: false
           })
           break;
       case 'CLEAR':
@@ -71,7 +107,8 @@ export default class App extends Component {
           let deletedString = string.substr(0, string.length - 1);
           let length = string.length;
           this.setState({
-            displayValue: length == 1 ? '0' : deletedString
+            displayValue: length == 1 ? '0' : deletedString,
+            firstValue: length == 1 ? '' : deletedString
           })
       break;
     }
@@ -113,8 +150,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333'
   },
   resultText: {
+    fontFamily: 'Digital-7', // Digital-7 digital-7
+    fontWeight: '600',
+    fontStyle: 'normal',
     color: '#727f85',
-    fontSize: 80,
+    fontSize: 70,
     fontWeight: 'bold',
     padding: 20,
     textAlign: 'right'
