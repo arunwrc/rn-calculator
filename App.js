@@ -1,7 +1,6 @@
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-
-import InputNumberButton from './InputNumberButton';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import InputNumberButton from './components/InputNumberButton';
 
 const buttons = [
   ['CLEAR', 'DEL'],
@@ -9,32 +8,20 @@ const buttons = [
   ['4', '5', '6', 'x'],
   ['1', '2', '3', '-'],
   ['0', '.', '=', '+'],
-]
+];
 export default class App extends Component {
-
   constructor() {
-    super()
+    super();
     this.initialState = {
       displayValue: '0',
       firstValue: '',
       secondValue: '',
       nextValue: false,
       operator: null
-    }
+    };
     this.state = this.initialState;
   }
-  renderButtons() {
-    let layouts = buttons.map((buttonRows, index) => {
-      let rowItem = buttonRows.map((buttonItems, buttonIndex) => {
-        return <InputNumberButton 
-        value={buttonItems}
-        handleOnPress={this.handleInput.bind(this, buttonItems)}
-        key={'btn-' + buttonIndex} />
-      })
-      return <View style={styles.inputRow} key={'row-' + index}>{rowItem}</View>
-    });
-   return layouts
-  }
+  
   handleInput = (input) => {
     const { displayValue, operator, firstValue, secondValue, nextValue } = this.state;
     switch (input) {
@@ -50,16 +37,16 @@ export default class App extends Component {
       case '9':
           this.setState({ 
             displayValue: (displayValue === '0') ? input : displayValue + input
-          })
+          });
 
-          if (!nextValue){
+          if (!nextValue) {
             this.setState({
               firstValue: firstValue + input
-            })
-          }else{
+            });
+          } else {
             this.setState({
               secondValue: secondValue + input
-            })
+            });
           }
           break;
       case '+':
@@ -69,56 +56,65 @@ export default class App extends Component {
           this.setState({
             nextValue: true,
             operator: input,
-            displayValue: (operator !== null ? displayValue.substr(0, displayValue.length-1) : displayValue) + input
-          })
+            displayValue: (operator !== null ? 
+            displayValue.substr(0, displayValue.length - 1) : displayValue) + input
+          });
       case '.':
-          let dot = displayValue.toString().slice(-1)
+          const dot = displayValue.toString().slice(-1);
           this.setState({
             displayValue: dot !== '.' ? displayValue + input : displayValue
-          })
-          if (!nextValue){
+          });
+          if (!nextValue) {
             this.setState({
               firstValue: firstValue + input
-            })
-          }else{
+            });
+          } else {
             this.setState({
               secondValue: secondValue + input
-            })
+            });
           }
           break;
       case '=':
           //alert(firstValue);
-          var first = firstValue.substr(0, firstValue.length-1)
-          let formatOperator = (operator == 'x') ? '*' : (operator == '/') ? '/' : operator
-          let result = eval(first+formatOperator+secondValue)
+          const first = firstValue.substr(0, firstValue.length - 1);
+          const formatOperator = (operator === 'x') ? '*' : (operator === '/') ? '/' : operator;
+          
+          const result = eval(first + formatOperator + secondValue);
           this.setState({
             displayValue: result % 1 === 0 ? result : result.toFixed(2),
             firstValue: result % 1 === 0 ? result : result.toFixed(2),
             secondValue: '',
             operator: null,
             nextValue: false
-          })
+          });
           break;
       case 'CLEAR':
           this.setState(this.initialState);
           break;
       case 'DEL':
-          let string = displayValue.toString();
-          let deletedString = string.substr(0, string.length - 1);
-          let length = string.length;
+          const string = displayValue.toString();
+          const deletedString = string.substr(0, string.length - 1);
+          const length = string.length;
           this.setState({
-            displayValue: length == 1 ? '0' : deletedString,
-            firstValue: length == 1 ? '' : deletedString
-          })
+            displayValue: length === 1 ? '0' : deletedString,
+            firstValue: length === 1 ? '' : deletedString
+          });
       break;
     }
   }
-  // handleInput = (input) => {
-  //   const { displayValue } = this.state;
-  //   this.setState({
-  //     displayValue: (displayValue === '0') ? input : displayValue + input
-  //   })
-  // }
+  renderButtons() {
+    const layouts = buttons.map((buttonRows, index) => {
+      const rowItem = buttonRows.map((buttonItems, buttonIndex) => {
+        return (<InputNumberButton 
+        value={buttonItems}
+        handleOnPress={this.handleInput.bind(this, buttonItems)}
+        key={'btn-' + buttonIndex} 
+        />);
+      });
+      return <View style={styles.inputRow} key={'row-' + index}>{rowItem}</View>
+    });
+   return layouts;
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -150,12 +146,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333'
   },
   resultText: {
-    fontFamily: 'Digital-7', // Digital-7 digital-7
+    fontFamily: 'Digital-7',
     fontWeight: '600',
     fontStyle: 'normal',
     color: '#727f85',
     fontSize: 70,
-    fontWeight: 'bold',
     padding: 20,
     textAlign: 'right'
   },
