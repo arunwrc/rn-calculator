@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import InputNumberButton from './components/InputNumberButton';
 
+const Parser = require('expr-eval').Parser;
+
 const buttons = [
   ['CLEAR', 'DEL'],
   ['7', '8', '9', '/'],
@@ -79,7 +81,7 @@ export default class App extends Component {
           const first = firstValue.substr(0, firstValue.length - 1);
           const formatOperator = (operator === 'x') ? '*' : (operator === '/') ? '/' : operator;
           
-          const result = eval(first + formatOperator + secondValue);
+          const result = Parser.evaluate(first + formatOperator + secondValue);
           this.setState({
             displayValue: result % 1 === 0 ? result : result.toFixed(2),
             firstValue: result % 1 === 0 ? result : result.toFixed(2),
